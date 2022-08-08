@@ -70,12 +70,20 @@ class ItemParser:
         for s in spans:
             s = s.text
 
-            for property_name in ItemParser.item_property_names:
-                if re.search(property_name, s, re.IGNORECASE):
-                    secondary_stat_list[property_name] = re.search(r'\d+', s).group()
+            if s.startswith("Equip:"):
+                if "proc" in s.lower():
+                    # Has a proc in string so a proc effect
+                    secondary_stat_list["Proc Effect"] = s
+                else:
+                    for property_name in ItemParser.item_property_names:
+                        if re.search(property_name, s, re.IGNORECASE):
+                            secondary_stat_list[property_name] = re.search(r'\d+', s).group()
 
-            if s.startswith("Use:"):
+            elif s.startswith("Use:"):
                 secondary_stat_list["Use Effect"] = s
+
+            else:
+                secondary_stat_list["Unknown Stat"] = s
 
         return secondary_stat_list
 
