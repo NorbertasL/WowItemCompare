@@ -39,6 +39,7 @@ class ItemParser:
             "Name": self.get_item_name(),
             "Item Level": self.get_item_level()}
         item_data.update(self.get_core_stats())
+        item_data.update(self.get_sockets())
         item_data.update(self.get_secondary_stats())
 
         return item_data
@@ -85,3 +86,23 @@ class ItemParser:
     def get_armour_class(self):
         span = self.tooltip.find("span", "q1")
         return span.text if span.text else "None"
+
+    def get_sockets(self):
+        socker_colours = ("Red", "Yellow", "Blue")
+        sockets = self.tooltip.find_all("a", "q0")
+        socket_list = {}
+        for s in sockets:
+            s = s.text
+            words = s.split(" ")
+            if len(words) == 0:
+                continue
+            for colour in socker_colours:
+                if colour.lower() == words[0].lower():
+                    if colour in socket_list:
+                        socket_list[colour] = socket_list[colour] + 1
+                    else:
+                        socket_list[colour] = 1
+        return socket_list
+
+
+
