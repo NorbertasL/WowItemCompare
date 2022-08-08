@@ -40,6 +40,7 @@ class ItemParser:
             "Item Level": self.get_item_level()}
         item_data.update(self.get_core_stats())
         item_data.update(self.get_sockets())
+        item_data.update(self.get_socket_bonus())
         item_data.update(self.get_secondary_stats())
 
         return item_data
@@ -104,5 +105,13 @@ class ItemParser:
                         socket_list[colour] = 1
         return socket_list
 
-
-
+    def get_socket_bonus(self):
+        socket_bonus = self.tooltip.find("span", "q0")
+        socket_bonus_pair = {}
+        if socket_bonus is None:
+            return socket_bonus_pair
+        socket_bonus = socket_bonus.text
+        for property_name in ItemParser.item_property_names:
+            if re.search(property_name, socket_bonus, re.IGNORECASE):
+                socket_bonus_pair["Socket Bonus"] = re.search(r'\d+', socket_bonus).group() + " " + property_name
+                return socket_bonus_pair
