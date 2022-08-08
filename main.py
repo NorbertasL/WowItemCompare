@@ -1,16 +1,27 @@
-# This is a sample Python script.
+import json
+import re
+from pprint import pprint
+from tokenize import Comment
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from bs4 import BeautifulSoup
+import pandas as pd
 
+# Setting up Virtual Chrome
+from item_parser import ItemParser
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+googleDriverPath = "D:/Programming/ChromeDriver/chromedriver.exe"
+service = Service(googleDriverPath)
 
+url = input("Enter WowHead URL:").strip()
+# url = "https://www.wowhead.com/wotlk/item=37651/the-prospectors-prize"
+while url.lower() != "q":
+    parser = ItemParser(service, url)
+    returned_data = parser.get_item_data()
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+    for key in returned_data:
+        print(key, ' : ', returned_data[key])
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    print("Type q to quit")
+    url = input("Enter WowHead URL:").strip()
