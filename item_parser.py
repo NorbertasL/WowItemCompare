@@ -74,6 +74,9 @@ class ItemParser:
                 if re.search(property_name, s, re.IGNORECASE):
                     secondary_stat_list[property_name] = re.search(r'\d+', s).group()
 
+            if s.startswith("Use:"):
+                secondary_stat_list["Use Effect"] = s
+
         return secondary_stat_list
 
     def get_item_level(self):
