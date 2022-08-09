@@ -31,6 +31,7 @@ class ItemStatsOf(enum.Enum):
     EXP = "Expertise"
     ARP = "Armor Penetration"
     ATP = "Attack Power"
+    DEF_RARING = "Defense Rating"
 
 
 class SocketColourOf(enum.Enum):
