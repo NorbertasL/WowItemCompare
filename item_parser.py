@@ -39,10 +39,9 @@ class SingleItemParser:
 
         item_object.add_stats(secondary_stat_list)
 
-        # TODO Deal with proc/use and unknown effect
-        # item_object.set_parameter(ItemParameterOf.PROC_EFFECT, proc_effect_list)
-        # item_object.set_parameter(ItemParameterOf.USE_EFFECTS, user_effect_list)
-        # item_object.set_parameter(ItemParameterOf.OTHER, unknown_effect_list)
+        item_object.set_basic_parameter(ItemBasicParameterOf.PROC_EFFECT, proc_effect_list)
+        item_object.set_basic_parameter(ItemBasicParameterOf.USE_EFFECT, user_effect_list)
+        item_object.set_basic_parameter(ItemBasicParameterOf.OTHER, unknown_effect_list)
 
         return item_object
 
