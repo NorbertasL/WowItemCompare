@@ -40,10 +40,6 @@ class SocketColourOf(enum.Enum):
     BONUS = "Bonus"
 
 
-class ItemTypeOf(enum.Enum):
-    HEAD = "Head"
-
-
 class ArmourClassOf(enum.Enum):
     CLOTH = "Cloth"
     LEATHER = "Leather"
