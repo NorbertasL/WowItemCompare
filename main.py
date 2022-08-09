@@ -1,10 +1,11 @@
 from pprint import pprint
-import output_beautifier
+from personal_printer import TableMaker
 from selenium.webdriver.chrome.service import Service
 from item_filter import Filter
 from item_obj import Item, ArmourClassOf, ItemStatsOf
 from item_parser import SingleItemParser
 from item_parser import ItemListParser
+
 
 googleDriverPath: str = "D:/Programming/ChromeDriver/chromedriver.exe"
 service: Service = Service(googleDriverPath)
@@ -33,7 +34,8 @@ while url.lower() != "q":
 
     print("Total Found after Filter:", len(item_obj_list))
 
-    output_beautifier.to_exe_for_exel(item_obj_list, "|", "output.txt")
+    table_printer: TableMaker = TableMaker()
+    table_printer.print_to_txt(item_obj_list)
 
     print("Type q to quit")
     url = input("Enter WowHead URL:").strip()
