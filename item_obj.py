@@ -1,7 +1,6 @@
-import enum
+from enum import Enum
 
-
-class ItemBasicParameterOf(enum.Enum):
+class ItemBasicParameterOf(Enum):
     TYPE = "Type"
     NAME = "Name"
     ITEM_LEVEL = "Item Level"
@@ -12,7 +11,7 @@ class ItemBasicParameterOf(enum.Enum):
     OTHER = "Other"
 
 
-class ItemStatsOf(enum.Enum):
+class ItemStatsOf(Enum):
     # Primary
     INT = "Intellect"
     STR = "Strength"
@@ -32,22 +31,77 @@ class ItemStatsOf(enum.Enum):
     ARP = "Armor Penetration"
     ATP = "Attack Power"
     DEF_RARING = "Defense Rating"
+    DODGE_RARING = "Dodge Rating"
+    PARRY_RATING = "Parry Rating"
+    SHIELD_BLOCK = "Shield Block"
+    BLOCK_VALUE = "Block Value"
+    RES = "Resilience"
 
 
-class SocketColourOf(enum.Enum):
+class SocketColourOf(Enum):
     RED = "Red"
     YELLOW = "Yellow"
     BLUE = "Blue"
     BONUS = "Bonus"
 
 
-class ArmourClassOf(enum.Enum):
+class ArmourClassOf(Enum):
     CLOTH = "Cloth"
     LEATHER = "Leather"
     MAIL = "Mail"
     PLATE = "Plate"
     NONE = "None"
     UNKNOWN = "Unknown"
+
+# Using this enum to store slots that might need to be combined in main
+class _EquipmentSlotOf(Enum):
+    ONE_HAND = "One-Hand"
+    MAIN_HAND = "Main Hand"
+    OFF_HAND = "Off Hand" # Weapons
+    TWO_HAND = "Two-Hand"
+    RANGED = "Ranged"
+
+    SHIELD = "Shield"
+    HELD_IN_OFF_HAND = "Held In Off-Hand"
+
+# Will use this for sorting by equipment slot, when making tables
+class EquipmentSlotOf(Enum):
+
+    # Armour
+    HEAD = "Head"
+    NECK = "Neck"
+    SHOULDERS = "Shoulders"
+    CHEST = "Chest"
+    WRIST = "Wrist"
+    LEGS = "Legs"
+    FEET = "Feet"
+    WAIST = "Waist"
+    HANDS = "Hands"
+    BACK = "Back"
+
+    # Jewellery
+    FINGER = "Finger"
+    TRINKET = "Trinket"
+
+    # Weapons
+    ONE_HAND = _EquipmentSlotOf.ONE_HAND.value
+    MAIN_HAND = _EquipmentSlotOf.MAIN_HAND.value
+    OFF_HAND_WEAPON = _EquipmentSlotOf.OFF_HAND.value
+    TWO_HAND = _EquipmentSlotOf.TWO_HAND.value
+    RANGED = _EquipmentSlotOf.RANGED.value
+
+    WEAPONS_ALL = _EquipmentSlotOf.ONE_HAND.value, _EquipmentSlotOf.MAIN_HAND.value, _EquipmentSlotOf.OFF_HAND.value,\
+                  _EquipmentSlotOf.TWO_HAND.value, _EquipmentSlotOf.RANGED.value
+    ONE_HAND_ALL = _EquipmentSlotOf.ONE_HAND.value, _EquipmentSlotOf.MAIN_HAND.value
+
+    # Off-Hand
+    OFF_HAND = _EquipmentSlotOf.HELD_IN_OFF_HAND.value
+    SHIELD = _EquipmentSlotOf.SHIELD.value
+
+    OFF_HAND_ALL = _EquipmentSlotOf.HELD_IN_OFF_HAND.value, _EquipmentSlotOf.SHIELD.value
+
+    # Special
+    RELIC = "Relic"
 
 
 class Item:
