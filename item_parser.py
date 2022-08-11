@@ -42,6 +42,7 @@ class SingleItemParser:
         item_object.set_basic_parameter(ItemBasicParameterOf.PROC_EFFECT, proc_effect_list)
         item_object.set_basic_parameter(ItemBasicParameterOf.USE_EFFECT, user_effect_list)
         item_object.set_basic_parameter(ItemBasicParameterOf.OTHER, unknown_effect_list)
+        item_object.set_basic_parameter(ItemBasicParameterOf.SOURCE, self.get_source())
 
         return item_object
 
@@ -191,6 +192,21 @@ class SingleItemParser:
                 value = value
 
         return stat_name, value
+
+    def get_source(self) -> str:
+
+        element_td: PageElement = self.soup_content.find("td", attrs={'class': "icon-boss-padded"})
+        # Boss drops
+        if element_td is None:
+            print("Not a boss drop")
+            return "Unknown"
+        element_a: PageElement = element_td.find("a")
+        if element_a is None:
+            print("Could not find <a> in:", element_td)
+            return "Unknown"
+        source_name: str = element_a.text
+        source_link: str = element_a['href']
+        return source_name + " @ " + source_link
 
 
 class ItemListParser:

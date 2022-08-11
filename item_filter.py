@@ -1,5 +1,6 @@
 from item_obj import Item, ItemBasicParameterOf, ArmourClassOf, ItemStatsOf
 
+# TODO Add way to add stats you are looking for instead of ignoring
 
 def has_valid_armour_class(item: Item, ignored_armour_classes: set[ArmourClassOf]) -> bool:
     for unwanted_armour_class in ignored_armour_classes:

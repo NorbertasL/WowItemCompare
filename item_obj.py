@@ -8,6 +8,7 @@ class ItemBasicParameterOf(Enum):
     ARMOUR_CLASS = "Armour Class"
     USE_EFFECT = "Use Effects"
     PROC_EFFECT = "Proc Effects"
+    SOURCE = "Source"
     OTHER = "Other"
 
 
