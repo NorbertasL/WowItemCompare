@@ -1,11 +1,9 @@
-from pprint import pprint
-
-import item_parser
 from personal_printer import TableMaker
 from selenium.webdriver.chrome.service import Service
 from item_filter import Filter
 from item_obj import Item, ArmourClassOf, ItemStatsOf, ItemBasicParameterOf, SocketColourOf, EquipmentSlotOf
 from item_parser import SingleItemParser, ItemListParser, LinkType, get_link_type
+import logging
 
 
 def save(item_list: list[Item], file_name: str):
@@ -27,6 +25,8 @@ def save(item_list: list[Item], file_name: str):
     # End of table layout
 
     table_printer.print_to_txt(item_list)
+
+
 def filter_items(item_list: list[Item]) -> list[Item]:
     # Building filter
     my_filter: Filter = Filter()
@@ -36,6 +36,9 @@ def filter_items(item_list: list[Item]) -> list[Item]:
     # END of filter
 
     return my_filter.filter_items(item_list)
+
+
+
 
 googleDriverPath: str = "D:/Programming/ChromeDriver/chromedriver.exe"
 service: Service = Service(googleDriverPath)
@@ -88,7 +91,7 @@ while True:
 
             case "filter":
                 temp: list[Item] = filter_items(all_item_obj)
-                print("Filtered out ", len(all_item_obj)-len(temp), " items.")
+                print("Filtered out ", len(all_item_obj) - len(temp), " items.")
                 print("Do you want to add ", len(temp), " to the filtered_item list?(y/n)")
                 user_input = input().strip()
                 if user_input.startswith("y"):
@@ -137,4 +140,3 @@ while True:
 
     print("Done! Total items in the list:", len(all_item_obj))
     print("Total filtered items in the list:", len(filtered_item_onj))
-

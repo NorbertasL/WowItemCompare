@@ -1,4 +1,5 @@
 import enum
+import logging
 import re
 
 from bs4 import BeautifulSoup, ResultSet, PageElement  # type: ignore
@@ -8,7 +9,7 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 
 from item_obj import Item, ItemBasicParameterOf, ItemStatsOf, ArmourClassOf, SocketColourOf
 
-
+logging.basicConfig(filename="LOG.log", level=logging.WARNING)
 class SingleItemParser:
 
     def __init__(self, service: Service, url: str):
@@ -66,6 +67,7 @@ class SingleItemParser:
                     stat_name: str = string_list[1]
                 else:
                     print("Issue getting core stat name from:", text_string)
+                    logging.error(self.url + " Issue getting core stat name from:"+text_string)
                     continue
 
                 for know_stat_name in ItemStatsOf:
@@ -75,6 +77,7 @@ class SingleItemParser:
                             value: int = int(temp_string)
                         except ValueError:
                             print("Issue getting core stat value from:", text_string)
+                            logging.error(self.url + " Issue getting core stat value from:" + text_string)
                             continue
                         core_stat_list[know_stat_name] = value
 
@@ -109,10 +112,12 @@ class SingleItemParser:
                                 value: int = int(temp_string)
                             except ValueError:
                                 print("Issue getting secondary stat value from:", text_string)
+                                logging.error(self.url + " Issue getting secondary stat value from:" + text_string)
                                 continue
                             stat[know_stat_name] = value
                     if stat == {}:  # Didn't find a know stat so has to be unknown
                         print("Unknown effect has been found:", text_string)
+                        logging.warning(self.url + " Unknown effect has been found:" + text_string)
                         unknown_effect = text_string
                     else:
                         secondary_stat_list.update(stat)
@@ -123,6 +128,7 @@ class SingleItemParser:
         spans: ResultSet = self.tooltip.find_all("span")
         if len(spans) == 0:
             print("Issue finding item level:", spans)
+            logging.error(self.url + " Issue finding item level:" + spans)
             return 0
 
         temp_string: str = re.search(r'\d+', spans[0].text).group()  # type: ignore
@@ -130,6 +136,7 @@ class SingleItemParser:
             value: int = int(temp_string)
         except ValueError:
             print("Issue getting item level value from:", spans)
+            logging.error(self.url + " Issue getting item level value from:" + spans)
             return 0
         return value
 
@@ -138,6 +145,7 @@ class SingleItemParser:
         tds: ResultSet = self.tooltip.find_all("td")
         if len(tds) < 3:
             print("Failed to find item type in:", tds)
+            logging.error(self.url + " Failed to find item type in:" + tds)
         return tds[2].text
 
     def get_armour_class(self) -> ArmourClassOf:
@@ -187,6 +195,7 @@ class SingleItemParser:
                     value = int(temp_string)
                 except ValueError:
                     print("Issue getting socket bonus stat value from:", socket_bonus)
+                    logging.error(self.url + " Issue getting socket bonus stat value from:" + socket_bonus)
                     continue
                 stat_name = stat
                 value = value
@@ -198,11 +207,13 @@ class SingleItemParser:
         element_td: PageElement = self.soup_content.find("td", attrs={'class': "icon-boss-padded"})
         # Boss drops
         if element_td is None:
-            print("Not a boss drop")
+            print("Unknown source")
+            logging.warning(self.url + " Unknown source:" + str(element_td))
             return "Unknown"
         element_a: PageElement = element_td.find("a")
         if element_a is None:
             print("Could not find <a> in:", element_td)
+            logging.error(self.url + " Could not find <a> in:" + str(element_td))
             return "Unknown"
         source_name: str = element_a.text
         source_link: str = element_a['href']
@@ -230,6 +241,7 @@ class ItemListParser:
         for x in self.item_list_data:
             if x.text == "":
                 print("Failed to find item name in the list:", self.item_list_data)
+                logging.error(self.url + " Failed to find item name in the list:" + str(self.item_list_data))
                 continue
             item_link_list[x.text] = x['href']
         return item_link_list
