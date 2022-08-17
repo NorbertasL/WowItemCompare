@@ -24,8 +24,15 @@ def has_unwanted__stats(item: Item, unwanted_stats: set[ItemStatsOf]) -> bool:
 class Filter:
 
     def __init__(self):
+        # Unwanted stuff
         self.ignored_stats: set[ItemStatsOf] = set()
         self.ignored_armour_classes: set[ArmourClassOf] = set()
+
+        """""
+        # Wanted stuff
+        self.wanted_stats: set[ItemStatsOf] = set()
+        self.wanted_armour_classes: set[ArmourClassOf] = set()
+        """
 
     def filter_items(self, item_list: list[Item]) -> list[Item]:
         return_list: list[Item] = []
@@ -49,3 +56,4 @@ class Filter:
 
     def set_ignore_stat(self, ignore_stat: set[ItemStatsOf]):
         self.ignored_stats = ignore_stat
+
