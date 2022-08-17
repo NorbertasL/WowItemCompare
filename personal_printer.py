@@ -6,14 +6,12 @@ from item_obj import Item, ItemBasicParameterOf, ItemStatsOf, SocketColourOf
 class TableMaker:
 
     def __init__(self):
-        pass
-
-    display_columns: list[enum.Enum] = [ItemBasicParameterOf.NAME]
-    output_loc: str = "output.txt"  # default output file
-    seperator: str = " | "  # default seperator
+        self.display_columns: list[enum.Enum] = [ItemBasicParameterOf.NAME]
+        self.output_loc: str = "output.txt"  # default output file
+        self.seperator: str = " | "  # default seperator
 
     def print_to_txt(self, items: list[Item]):
-        with open(self.output_loc, 'w') as file:
+        with open(self.output_loc, 'a') as file:
 
             #  Print Headers
             for column in self.display_columns:
@@ -38,6 +36,10 @@ class TableMaker:
                     file.write(str(value))
                     file.write(self.seperator)
                 file.write("\n")
+            file.write("\n")
 
     def add_display_column(self, item_parameter: ItemBasicParameterOf | ItemStatsOf | SocketColourOf):
         self.display_columns.append(item_parameter)
+
+    def set_file_loc(self, file: str):
+        self.output_loc = file
