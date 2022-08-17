@@ -32,7 +32,7 @@ def filter_items(item_list: list[Item]) -> list[Item]:
     my_filter: Filter = Filter()
     my_filter.set_ignore_armour_class({ArmourClassOf.PLATE})
     my_filter.set_ignore_stat({ItemStatsOf.STR, ItemStatsOf.AGI, ItemStatsOf.ARP, ItemStatsOf.EXP, ItemStatsOf.ATP,
-                               ItemStatsOf.DEF_RARING, ItemStatsOf.SPT, ItemStatsOf.ARP})
+                               ItemStatsOf.DEF_RARING, ItemStatsOf.SPT, ItemStatsOf.ARP, ItemStatsOf.RANDOM_ENCH})
     # END of filter
 
     return my_filter.filter_items(item_list)

@@ -1,6 +1,7 @@
 import enum
 import logging
 import re
+import sys
 
 from bs4 import BeautifulSoup, ResultSet, PageElement  # type: ignore
 from selenium import webdriver
@@ -107,9 +108,15 @@ class SingleItemParser:
 
                     for know_stat_name in ItemStatsOf:
                         if re.search(know_stat_name.value, text_string, re.IGNORECASE):
-                            temp_string: str = re.search(r'\d+', text_string).group()  # type: ignore
+
                             try:
+                                temp_string: str = re.search(r'\d+', text_string).group()  # type: ignore
                                 value: int = int(temp_string)
+                            except AttributeError:
+                                # Some attributes might not have a value like <Random enchantment>
+                                print("Attribute Error")
+                                logging.error(self.url + str(sys.exc_info()))
+                                value = -1
                             except ValueError:
                                 print("Issue getting secondary stat value from:", text_string)
                                 logging.error(self.url + " Issue getting secondary stat value from:" + text_string)

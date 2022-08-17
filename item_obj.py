@@ -39,6 +39,8 @@ class ItemStatsOf(Enum):
     BLOCK_VALUE = "Block Value"
     RES = "Resilience"
 
+    RANDOM_ENCH = "<Random enchantment>"
+
 
 class SocketColourOf(Enum):
     RED = "Red"
