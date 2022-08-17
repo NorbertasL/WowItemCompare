@@ -3,6 +3,7 @@ from enum import Enum
 class ItemBasicParameterOf(Enum):
     TYPE = "Type"
     NAME = "Name"
+    LINK = "Link"
     ITEM_LEVEL = "Item Level"
     BINDING_TYPE = "Binding Type"
     ARMOUR_CLASS = "Armour Class"
@@ -107,8 +108,9 @@ class EquipmentSlotOf(Enum):
 
 class Item:
 
-    def __init__(self, name: str):
-        self.basic_parameters: dict[ItemBasicParameterOf, str] = {ItemBasicParameterOf.NAME: name}
+    def __init__(self, name: str, link: str):
+        self.basic_parameters: dict[ItemBasicParameterOf, str] = {
+            ItemBasicParameterOf.NAME: name, ItemBasicParameterOf.LINK: link}
         self.stats: dict[ItemStatsOf, int] = {}
         self.sockets: dict[SocketColourOf, int] = {}
         self.socket_bonus: dict[ItemStatsOf, int] = {}

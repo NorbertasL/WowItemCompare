@@ -26,7 +26,7 @@ class SingleItemParser:
 
     def get_item_data(self) -> Item:
 
-        item_object: Item = Item(self.get_item_name())
+        item_object: Item = Item(self.get_item_name(), self.url)
         item_object.set_basic_parameter(ItemBasicParameterOf.TYPE, self.get_item_type())
         item_object.set_basic_parameter(ItemBasicParameterOf.ARMOUR_CLASS, self.get_armour_class().value)
         item_object.add_stats(self.get_core_stats())
@@ -236,24 +236,23 @@ class ItemListParser:
 
 
 class LinkType(enum.Enum):
-    SINGLE_ITEM = 0
-    ITEM_LIST = 1
+    INVALID = 0
+    SINGLE_ITEM = 1
+    ITEM_LIST = 2
 
 
-def _get_link_type(html: str) -> LinkType:
-    # wowhead_link = "https://www.wowhead.com/wotlk"
-    single_item_link = "https://www.wowhead.com/wotlk/item"
-    item_list_link = "https://www.wowhead.com/wotlk"
-    if html == single_item_link:
-        print("Link type is single")
+def get_link_type(html: str) -> LinkType:
+    wowhead_link = "https://www.wowhead.com/wotlk"
+    single_item_link = wowhead_link + "/item"
+    item_list_link = wowhead_link
+
+    if html.startswith(single_item_link):
         return LinkType.SINGLE_ITEM
 
-    if html == item_list_link:
-        print("Link type is item list")
+    if html.startswith(item_list_link):
         return LinkType.ITEM_LIST
 
-    print("Link type is invalid")
-    raise Exception("Invalid Link")
+    return LinkType.INVALID
 
     # throw error
 
