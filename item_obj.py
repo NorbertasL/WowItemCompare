@@ -1,5 +1,7 @@
+import logging
 from enum import Enum
-from ITEM_CONSTANTS import ItemBasicParameterOf, ItemStatsOf
+from ITEM_CONSTANTS import ItemBasicParameterOf, ItemStatsOf, ArmourClassOf, ItemSlotOf
+
 
 class Item:
 
@@ -33,6 +35,27 @@ class Item:
     def get_all_stats(self) -> dict[ItemStatsOf, int]:
         return self.stats
 
+    def setup_armour_class(self):
+        armour_id: int = int(self.get_basic_parameter(ItemBasicParameterOf.ARMOUR_CLASS))
+        a_class: ArmourClassOf | None = ArmourClassOf.find_by_id(armour_id)
+        if a_class is None:
+            #print("Unknown armour class id:", str(armour_id), " for ", self.get_basic_parameter(ItemBasicParameterOf.LINK))
+            logging.warning("Unknown armour class id:" + str(armour_id) + " for " + self.get_basic_parameter(
+                ItemBasicParameterOf.LINK))
+        else:
+            self.set_basic_parameter(ItemBasicParameterOf.ARMOUR_CLASS, a_class.get_name())
+
+    def setup_slot(self):
+        slot_id: int = int(self.get_basic_parameter(ItemBasicParameterOf.SLOT))
+        slot: ItemSlotOf | None = ItemSlotOf.find_by_id(slot_id)
+        if slot is None:
+            print("Unknown slot id:", str(slot_id), " for ", self.get_basic_parameter(ItemBasicParameterOf.LINK))
+            logging.warning("Unknown armour class id:" + str(slot_id) + " for " + self.get_basic_parameter(
+                ItemBasicParameterOf.LINK))
+        else:
+            self.set_basic_parameter(ItemBasicParameterOf.SLOT, slot.get_name())
+            print(self.get_basic_parameter(ItemBasicParameterOf.SLOT))
+
     def __str__(self):
         string: str = ""
         for k, v in self.basic_parameters.items():
@@ -40,11 +63,4 @@ class Item:
         string = string + "STATS\n"
         for k, v in self.stats.items():
             string = string + k.name + ":" + str(v) + "\n"
-        string = string + "SOCKETS\n"
-        for k, v in self.sockets.items():
-            string = string + k.name + ":" + str(v) + "\n"
-        string = string + "BONUS\n"
-        for k, v in self.socket_bonus.items():
-            string = string + k.name + ":" + str(v) + "\n"
-
         return string
