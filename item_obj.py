@@ -18,7 +18,10 @@ class Item:
 
     # stats
     def set_stat(self, key: ItemStatsOf, value: int):
-        self.stats[key] = value
+        if key is ItemStatsOf.SOCKET_JSON:
+            self._add_socket(value)
+        else:
+            self.stats[key] = value
 
     def add_stat(self, key: ItemStatsOf, value: int):
         if key in self.stats:
@@ -35,17 +38,32 @@ class Item:
     def get_all_stats(self) -> dict[ItemStatsOf, int]:
         return self.stats
 
-    def setup_armour_class(self):
+    # sockets
+
+    #  Sockets are odd, because their value is the id of the colour
+    def _add_socket(self, colour_id):
+        key: ItemStatsOf | None = ItemStatsOf.find_by_id(colour_id)
+        if key is None:
+            print("Unknown socker colour id:", str(colour_id))
+            logging.warning("Unknown socker colour id:" + str(colour_id))
+            return
+        count: int = self.get_stat(key)
+        if count is None:
+            count = 0
+        self.set_stat(key, count + 1)
+
+    def _setup_armour_class(self):
         armour_id: int = int(self.get_basic_parameter(ItemBasicParameterOf.ARMOUR_CLASS))
         a_class: ArmourClassOf | None = ArmourClassOf.find_by_id(armour_id)
         if a_class is None:
-            #print("Unknown armour class id:", str(armour_id), " for ", self.get_basic_parameter(ItemBasicParameterOf.LINK))
-            logging.warning("Unknown armour class id:" + str(armour_id) + " for " + self.get_basic_parameter(
-                ItemBasicParameterOf.LINK))
+            # print("Unknown armour class id:", str(armour_id), " for ", self.get_basic_parameter(ItemBasicParameterOf.LINK))
+            # logging.warning("Unknown armour class id:" + str(armour_id) + " for " + self.get_basic_parameter(
+                #ItemBasicParameterOf.LINK))
+            pass
         else:
             self.set_basic_parameter(ItemBasicParameterOf.ARMOUR_CLASS, a_class.get_name())
 
-    def setup_slot(self):
+    def _setup_slot(self):
         slot_id: int = int(self.get_basic_parameter(ItemBasicParameterOf.SLOT))
         slot: ItemSlotOf | None = ItemSlotOf.find_by_id(slot_id)
         if slot is None:
@@ -56,6 +74,9 @@ class Item:
             self.set_basic_parameter(ItemBasicParameterOf.SLOT, slot.get_name())
             print(self.get_basic_parameter(ItemBasicParameterOf.SLOT))
 
+    def _setup_source(self):
+        pass
+
     def __str__(self):
         string: str = ""
         for k, v in self.basic_parameters.items():
@@ -64,3 +85,10 @@ class Item:
         for k, v in self.stats.items():
             string = string + k.name + ":" + str(v) + "\n"
         return string
+
+    def format(self):
+        self._setup_armour_class()
+        self._setup_slot()
+        self._setup_source()
+
+

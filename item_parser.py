@@ -3,6 +3,7 @@ import logging
 import re
 import sys
 import json
+import typing
 
 from bs4 import BeautifulSoup, ResultSet, PageElement  # type: ignore
 from selenium import webdriver
@@ -38,8 +39,8 @@ class SingleItemParser:
         self.tooltip_bs: BeautifulSoup = self.soup_content.find("div", attrs={'id': 'folder5'})
         self.basic_info_dict: dict = json.loads("{" + (self.soup_content.find("div", attrs={'id': 'folder6'})
                                                        ).find("span", attrs={"class": ""}).text[9: -3] + "}")
-        self.stats_dict: dict = json.loads("{" + (self.soup_content.find("div", attrs={'id': 'folder7'})
-                                                  ).find("span", attrs={"class": ""}).text[9: -3] + "}")
+        self.stats_dict: dict[str, typing.Any] = json.loads("{" + (self.soup_content.find("div", attrs={
+            'id': 'folder7'})).find("span", attrs={"class": ""}).text[9: -3] + "}")
 
         self.item: Item = Item(url)
 
@@ -47,6 +48,7 @@ class SingleItemParser:
 
         self.extract_basic_info()
         self.extract_stats()
+        self.item.format()
         return self.item
 
         # try:
@@ -88,6 +90,12 @@ class SingleItemParser:
         for k, v in self.stats_dict.items():
             if ignored_json_key(k):
                 continue
+
+            #  Dealing with sockets
+            if k.startswith(ITEM_CONSTANTS.ItemStatsOf.SOCKET_JSON.get_json_key()) and k[-1].isdigit():
+                self.item.set_stat(ItemStatsOf.SOCKET_JSON, v)
+                continue
+
             item_key: ItemStatsOf | None = ITEM_CONSTANTS.ItemStatsOf.find_by_json_key(k)
             if item_key is None:
                 print("extract_stats:Unknown JSON key:", k, " ", self.url)
@@ -101,15 +109,15 @@ class ItemListParser:
         # browser.get(url)
 
         content: str = browser.page_source
-
-        self.soup_content: BeautifulSoup = BeautifulSoup(content, "html.parser")
-        self.soup_content = self.soup_content.find("div", attrs={'class': 'listview'})
-        self.item_list_data: ResultSet = \
-            self.soup_content.find_all("a", attrs={'class': re.compile("q")}, href=re.compile("item="))
+        try:
+            self.soup_content: BeautifulSoup = BeautifulSoup(content, "html.parser")
+            self.soup_content = self.soup_content.find("div", attrs={'class': 'listview'})
+            self.item_list_data: ResultSet = \
+                self.soup_content.find_all("a", attrs={'class': re.compile("q")}, href=re.compile("item="))
+        except AttributeError:
+            logging.error("No Item list for:", self.url)
 
     def get_item_list(self) -> list[str]:
-
-
         item_link_list: list[str] = []
         for x in self.item_list_data:
             if x.text == "":
