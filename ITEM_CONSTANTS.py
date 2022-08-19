@@ -4,7 +4,8 @@ class JsonEnum(Enum):
 
     def get_json_key(self) -> None | str:
         if isinstance(self.value, tuple):
-            return self.value[1]
+            if isinstance(self.value[1], str):
+                return self.value[1]
         return None
 
     @classmethod
@@ -22,7 +23,8 @@ class JsonEnum(Enum):
 class IdEnum(Enum):
     def get_id(self) -> None | int:
         if isinstance(self.value, tuple):
-            return self.value[1]
+            if isinstance(self.value[1], int):
+                return self.value[1]
         return None
 
     @classmethod
@@ -42,7 +44,7 @@ IGNORED_JSON_KEYS: list[str] = ["classs", "classes", "reqclass", "flags2", "qual
                                 "displayid", "dps", "speed", "dmgmax1", "dmgmin1", "dmgrange", "dmgtype1", "dura",
                                 "maxcount", "mledmgmax","mledmgmin", "mledps","mlespeed", "sellprice", "sheathtype",
                                 "buyprice", "reqrace", "races", "slotbak", "side", "rgddps", "rgdspeed", "rgddmgmax",
-                                "rgddmgmin", "heroic", "modelviewer"]
+                                "rgddmgmin", "heroic", "modelviewer", "reqarenartng", "armorbonus"]
 
 class ItemBasicParameterOf(JsonEnum):
     # ENUM = Name, Json_Key
@@ -63,12 +65,37 @@ class ItemBasicParameterOf(JsonEnum):
     SOURCE_MORE = "Source More", "sourcemore"
 
 class ItemSlotOf(IdEnum):
+    HEAD = "Head", 1
+    NECK = "Neck", 2
+    SHOULDER = "Shoulder", 3
+    SHIT = "Shirt", 4
+    CHEST = "Chest", 5
+    WAIST = "Waist", 6
+    LEGS = "Legs", 7
+    FEET = "Feet", 8
+    WRIST = "Wrist", 9
     HANDS = "Hands", 10
+    FINGER = "Finger", 11
     TRINKET = "Trinket", 12
+    ONE_HAND = "One-Hand", 13
+    SHIELD = "Shield", 14
+    RANGED = "Ranged", 15
+    BACK = "Back", 16
     TWO_HANDED = "Two-Hand", 17
+    BAG = "Bag", 18
+    TABARD = "Tabard", 19
+    #20
+    MAIN_HAND = "Main Hand", 21
+    OFF_HAND_WEAPON = "Off Hand", 22
+    OFF_HAND_MAGIC = "Held In Off-hand", 23
+    AMMO = "Ammo", 24
+    THROWN = "Thrown", 25
+    #26
+    #27
+    RELIC = "Relic", 28
 
 
-class ItemStatsOf(JsonEnum):
+class ItemStatsOf(JsonEnum, IdEnum):
     # Primary
     INT = "Intellect", "int"
     STR = "Strength", "str"
@@ -94,16 +121,18 @@ class ItemStatsOf(JsonEnum):
     BLOCK_VALUE = "Block Value", "blockamount"
     RES = "Resilience", "resirtng"
 
-    SOCKET_COUNT = "Socket Count", "nsockets"
-    RED_SOCKET = "Red", "socket1"
-    BLUE_SOCKET = "Blue", "socket2"
-    YELLOW_SOCKET = "Yellow", "socket3"
-
-    SOCKET_BONUS = "Socket Bonus", "socketbonus"
-
     ARMOUR_VALUE = "Armour Value", "armor"
     CD = "Cooldown", "cooldown"
     ITEM_SET = "Item Set", "itemset"
+
+    SOCKET_BONUS = "Socket Bonus", "socketbonus"
+    SOCKET_JSON = "Socket Json", "socket"  # JSON key is socket# and #=number
+    SOCKET_COUNT = "Socket Count", "nsockets"
+
+    META_SOCKET = "Meta", 1
+    RED_SOCKET = "Red", 2
+    YELLOW_SOCKET = "Yellow", 3
+    BLUE_SOCKET = "Blue", 4
 
 
 class ArmourClassOf(IdEnum):
