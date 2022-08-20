@@ -61,7 +61,7 @@ class ItemBasicParameterOf(JsonEnum):
     BINDING_TYPE = "Binding Type"
     USE_EFFECT = "Use Effects"
     PROC_EFFECT = "Proc Effects"
-    SOURCE = "Source", "source"
+    SOURCE_TYPE = "Source", "source"
     SOURCE_MORE = "Source More", "sourcemore"
 
 class ItemSlotOf(IdEnum):
@@ -93,7 +93,6 @@ class ItemSlotOf(IdEnum):
     #26
     #27
     RELIC = "Relic", 28
-
 
 class ItemStatsOf(JsonEnum, IdEnum):
     # Primary
@@ -140,4 +139,11 @@ class ArmourClassOf(IdEnum):
     LEATHER = "Leather", 2
     MAIL = "Mail", 3
     PLATE = "Plate", 4
+
+class SourceTypeOf(IdEnum):
+    DROP = "Drop", 2
+    VENDOR = "Vendor", 5
+
+
+
 

@@ -1,4 +1,5 @@
-from item_obj import Item, ItemBasicParameterOf, ArmourClassOf, ItemStatsOf
+from item_obj import Item
+from ITEM_CONSTANTS import ItemBasicParameterOf, ArmourClassOf, ItemStatsOf
 
 # TODO Add way to add stats you are looking for instead of ignoring
 

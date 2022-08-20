@@ -12,7 +12,7 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 
 import ITEM_CONSTANTS
 from item_obj import Item
-from ITEM_CONSTANTS import ItemBasicParameterOf, ItemStatsOf, ArmourClassOf
+from ITEM_CONSTANTS import ItemBasicParameterOf, ItemStatsOf, ArmourClassOf, ItemSlotOf, SourceTypeOf
 
 logging.basicConfig(filename="LOG.log", level=logging.WARNING)
 
@@ -48,7 +48,6 @@ class SingleItemParser:
 
         self.extract_basic_info()
         self.extract_stats()
-        self.item.format()
         return self.item
 
         # try:
@@ -71,7 +70,7 @@ class SingleItemParser:
         # item_object.set_basic_parameter(ItemBasicParameterOf.PROC_EFFECT, proc_effect_list)
         # item_object.set_basic_parameter(ItemBasicParameterOf.USE_EFFECT, user_effect_list)
         # item_object.set_basic_parameter(ItemBasicParameterOf.OTHER, unknown_effect_list)
-        # #item_object.set_basic_parameter(ItemBasicParameterOf.SOURCE, self.get_source())
+        # #item_object.set_basic_parameter(ItemBasicParameterOf.SOURCE_TYPE, self.get_source())
 
         # return item_object
 
@@ -84,7 +83,17 @@ class SingleItemParser:
                 print("extract_basic_info:Unknown JSON key:", k, " ", self.url)
                 logging.warning("extract_basic_info:Unknown JSON key:" + k + " for " + self.url)
                 continue
-            self.item.set_basic_parameter(item_key, v)
+
+            # Some parameters need special handling
+            match item_key:
+                case ItemBasicParameterOf.ARMOUR_CLASS:
+                    self._extract_armour_class(v)
+                case ItemBasicParameterOf.SLOT:
+                    self._extract_slot(v)
+                case ItemBasicParameterOf.SOURCE_TYPE:
+                    self._extract_source_type(v)
+                case _:
+                    self.item.set_basic_parameter(item_key, v)
 
     def extract_stats(self):
         for k, v in self.stats_dict.items():
@@ -102,6 +111,41 @@ class SingleItemParser:
                 logging.warning("extract_stats:Unknown JSON key:" + k + " for " + self.url)
                 continue
             self.item.set_stat(item_key, v)
+
+    def _extract_armour_class(self, armour_id: int):
+
+        a_class: enum.Enum | None = ArmourClassOf.find_by_id(armour_id)
+        if a_class is not None:
+            self.item.set_basic_parameter(ItemBasicParameterOf.ARMOUR_CLASS, ArmourClassOf(a_class).get_name())
+
+    def _extract_slot(self, slot_id: int):
+        slot: enum.Enum | None = ItemSlotOf.find_by_id(slot_id)
+        if slot is not None:
+            self.item.set_basic_parameter(ItemBasicParameterOf.SLOT, ItemSlotOf(slot).get_name())
+        else:
+            print("Unknown slot id:", str(slot_id), " for ", self.url)
+            logging.warning("Unknown slot id:" + str(slot_id) + " for " + self.url)
+
+    def _extract_source_type(self, source_list: list):
+        if not isinstance(source_list, list):
+            print("Source ids should be in a list but are:"
+                  + str(type(source_list)) + " of value:", str(source_list) + " for:", self.url)
+            logging.error("Source ids should be in a list but are:"
+                          + str(type(source_list)) + " of value:", str(source_list) + " for:", self.url)
+            return
+        source_type_str: str = ""
+        for source_id in source_list:
+            source_type: enum.Enum | None = SourceTypeOf.find_by_id(source_id)
+            if source_type is not None:
+                source_type_str = source_type_str + SourceTypeOf(source_type).get_name() + ", "
+            else:
+                print("Unknown source type of:" + str(source_id) + " for:" + self.url)
+                logging.warning("Unknown source type of:" + str(source_id) + " for:" + self.url)
+
+            self.item.set_basic_parameter(ItemBasicParameterOf.SOURCE_TYPE, source_type_str[:-2])
+
+
+
 
 class ItemListParser:
     def __init__(self, browser: WebDriver):

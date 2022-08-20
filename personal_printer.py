@@ -1,12 +1,14 @@
 import enum
 
-from item_obj import Item, ItemBasicParameterOf, ItemStatsOf, SocketColourOf
+from item_obj import Item, ItemBasicParameterOf, ItemStatsOf
 
 
 class TableMaker:
 
     def __init__(self):
-        self.display_columns: list[enum.Enum] = [ItemBasicParameterOf.NAME]
+        self.display_columns: list[enum.Enum] = [ItemBasicParameterOf.TYPE,
+                                                 ItemBasicParameterOf.LINK,
+                                                 ItemBasicParameterOf.NAME]
         self.output_loc: str = "output.txt"  # default output file
         self.seperator: str = " | "  # default seperator
 
@@ -30,15 +32,12 @@ class TableMaker:
                         case ItemStatsOf():
                             value = "" if item.get_stat(column) is None else str(item.get_stat(column))
 
-                        case SocketColourOf():
-                            value = "" if item.get_socket(column) is None else str(item.get_socket(column))
-
                     file.write(str(value))
                     file.write(self.seperator)
                 file.write("\n")
             file.write("\n")
 
-    def add_display_column(self, item_parameter: ItemBasicParameterOf | ItemStatsOf | SocketColourOf):
+    def add_display_column(self, item_parameter: ItemBasicParameterOf | ItemStatsOf):
         self.display_columns.append(item_parameter)
 
     def set_file_loc(self, file: str):

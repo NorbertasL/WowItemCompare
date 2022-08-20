@@ -8,7 +8,7 @@ from item_obj import Item
 from personal_printer import TableMaker
 from selenium.webdriver.chrome.service import Service
 from item_filter import Filter
-from ITEM_CONSTANTS import ItemBasicParameterOf, ItemStatsOf, EquipmentSlotOf, ArmourClassOf
+from ITEM_CONSTANTS import ItemBasicParameterOf, ItemStatsOf, ArmourClassOf
 from item_parser import SingleItemParser, ItemListParser, LinkType, get_link_type
 
 
@@ -17,7 +17,7 @@ def save(item_list: list[Item], file_name: str):
     table_printer: TableMaker = TableMaker()
     table_printer.set_file_loc(file_name)
     table_printer.add_display_column(ItemStatsOf.INT)
-    table_printer.add_display_column(ItemStatsOf.SP)
+    table_printer.add_display_column(ItemStatsOf.SD)
     table_printer.add_display_column(ItemStatsOf.HIT)
     table_printer.add_display_column(ItemStatsOf.HASTE)
     table_printer.add_display_column(ItemStatsOf.CRIT)
@@ -63,13 +63,13 @@ def get_next_page_url(url_link) -> str:
     if index == -1:
         return url_link + "#items;50"
     value = int(url_link[index:].replace("#items;", ""))
-    new_url: str = url_link[:index+7]+str(value+50)
+    new_url: str = url_link[:index + 7] + str(value + 50)
     print(new_url)
     return new_url
 
 
 try:
-    browser: ChromeWebDriver = _get_chrom_driver(False)
+    browser: ChromeWebDriver = _get_chrom_driver()
 
     all_item_obj: list[Item] = []
     filtered_item_onj: list[Item] = []
@@ -167,7 +167,6 @@ try:
             print("Found:", single_item.get_basic_parameter(ItemBasicParameterOf.NAME))
             print("Adding item to item list...")
             all_item_obj.append(single_item)
-
             print(single_item)
 
         elif link_type is LinkType.ITEM_LIST:
@@ -193,7 +192,6 @@ try:
             print("Adding items to item list...")
             all_item_obj = [*all_item_obj, *item_obj_list]
 
-
         else:
             print("WTF just happened? Cannot figure out the link type, HELP!")
             print(user_input, " was assumed to be:", link_type.name)
@@ -202,9 +200,6 @@ try:
         print("Done! Total items in the list:", len(all_item_obj))
         print("Total filtered items in the list:", len(filtered_item_onj))
 
-
-except Exception as e:
-    print(e)
 finally:
     # Closing browser
     print("Browser was closed!")

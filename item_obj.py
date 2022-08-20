@@ -1,6 +1,6 @@
 import logging
 from enum import Enum
-from ITEM_CONSTANTS import ItemBasicParameterOf, ItemStatsOf, ArmourClassOf, ItemSlotOf
+from ITEM_CONSTANTS import ItemBasicParameterOf, ItemStatsOf, ArmourClassOf, ItemSlotOf, SourceTypeOf
 
 
 class Item:
@@ -8,6 +8,7 @@ class Item:
     def __init__(self, link: str):
         self.basic_parameters: dict[ItemBasicParameterOf, str] = {ItemBasicParameterOf.LINK: link}
         self.stats: dict[ItemStatsOf, int] = {}
+        self.source: dict[SourceTypeOf, str] = {}
 
     # basic_parameters
     def set_basic_parameter(self, key: ItemBasicParameterOf, value: str):
@@ -52,30 +53,6 @@ class Item:
             count = 0
         self.set_stat(key, count + 1)
 
-    def _setup_armour_class(self):
-        armour_id: int = int(self.get_basic_parameter(ItemBasicParameterOf.ARMOUR_CLASS))
-        a_class: ArmourClassOf | None = ArmourClassOf.find_by_id(armour_id)
-        if a_class is None:
-            # print("Unknown armour class id:", str(armour_id), " for ", self.get_basic_parameter(ItemBasicParameterOf.LINK))
-            # logging.warning("Unknown armour class id:" + str(armour_id) + " for " + self.get_basic_parameter(
-                #ItemBasicParameterOf.LINK))
-            pass
-        else:
-            self.set_basic_parameter(ItemBasicParameterOf.ARMOUR_CLASS, a_class.get_name())
-
-    def _setup_slot(self):
-        slot_id: int = int(self.get_basic_parameter(ItemBasicParameterOf.SLOT))
-        slot: ItemSlotOf | None = ItemSlotOf.find_by_id(slot_id)
-        if slot is None:
-            print("Unknown slot id:", str(slot_id), " for ", self.get_basic_parameter(ItemBasicParameterOf.LINK))
-            logging.warning("Unknown armour class id:" + str(slot_id) + " for " + self.get_basic_parameter(
-                ItemBasicParameterOf.LINK))
-        else:
-            self.set_basic_parameter(ItemBasicParameterOf.SLOT, slot.get_name())
-            print(self.get_basic_parameter(ItemBasicParameterOf.SLOT))
-
-    def _setup_source(self):
-        pass
 
     def __str__(self):
         string: str = ""
@@ -85,10 +62,5 @@ class Item:
         for k, v in self.stats.items():
             string = string + k.name + ":" + str(v) + "\n"
         return string
-
-    def format(self):
-        self._setup_armour_class()
-        self._setup_slot()
-        self._setup_source()
 
 
