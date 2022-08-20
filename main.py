@@ -127,8 +127,19 @@ class ItemWebCrawler:
 
     def _run_auto(self):
         while len(self.link_list) != 0:
-            pass
-            # TODO set up the auto run sequence
+            link: str = self.link_list.pop()
+            link_type: LinkType = get_link_type(link)
+            match link_type:
+                case LinkType.INVALID_LINK, LinkType.NOT_A_LINK:
+                    logging.warning("Invalid link:" + str(self.user_input))
+                    print("Invalid link:", str(self.user_input))
+                case LinkType.WOWHEAD_SINGLE_ITEM:
+                    self._get_single_item(self.user_input)
+                case LinkType.WOWHEAD_ITEM_LIST:
+                    self._get_items_from_item_list(self.user_input)
+                case _:
+                    logging.error("Some how got a unknown LinkType of:" + str(link_type))
+
         # After running it, we turn it off so user can continue to use app
         self.auto_mode = False
 
@@ -188,12 +199,15 @@ class ItemWebCrawler:
                 if len(cmd) >= 2:  # Have second argument
                     if is_valid_file(cmd[1]):
                         self.link_list = _get_links_from_file(cmd[1])
-                        return
                     else:
-                        logging.warning("Invalid file:" + cmd[1] + " for auto mode. Using default.")
-                        print("Invalid file:" + cmd[1] + " for auto mode. Using default.")
-
-                self.link_list = _get_links_from_file()
+                        logging.warning("Invalid file:" + cmd[1] + " for auto mode.")
+                        print("Invalid file:" + cmd[1] + " for auto mode.")
+                        return
+                else:
+                    self.link_list = _get_links_from_file()
+                if len(self.link_list) == 0:
+                    print("No links found, no auto mode!")
+                    return
                 print("Staring auto mode")
                 self.auto_mode = True
 
