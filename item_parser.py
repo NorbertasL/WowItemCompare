@@ -1,13 +1,10 @@
 import enum
 import logging
 import re
-import sys
 import json
 import typing
 
 from bs4 import BeautifulSoup, ResultSet, PageElement  # type: ignore
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.webdriver import WebDriver
 
 import ITEM_CONSTANTS
@@ -35,6 +32,7 @@ class SingleItemParser:
         browser.get(self.url_xml)
         content: str = browser.page_source
 
+
         self.soup_content: BeautifulSoup = BeautifulSoup(content, "html.parser")
         self.tooltip_bs: BeautifulSoup = self.soup_content.find("div", attrs={'id': 'folder5'})
         self.basic_info_dict: dict = json.loads("{" + (self.soup_content.find("div", attrs={'id': 'folder6'})
@@ -49,30 +47,6 @@ class SingleItemParser:
         self.extract_basic_info()
         self.extract_stats()
         return self.item
-
-        # try:
-        #     item_object: Item = Item(self.get_item_name(), self.url)
-        # except AttributeError:
-        #     print("BAD ITEM!!!", self.url)
-        #     return Item("BAD ITEM", self.url)
-        # item_object.set_basic_parameter(ItemBasicParameterOf.TYPE, self.get_item_type())
-        # item_object.set_basic_parameter(ItemBasicParameterOf.ARMOUR_CLASS, self.get_armour_class().value)
-        # item_object.add_stats(self.get_core_stats())
-        # item_object.set_sockets(self.get_sockets())
-        # key, value = self.get_socket_bonus()
-        # if key is not None and value is not None:
-        #     item_object.set_socket_bonus(key, value)
-        #
-        # secondary_stat_list, proc_effect_list, user_effect_list, unknown_effect_list = self.get_secondary_stats()
-        #
-        # item_object.add_stats(secondary_stat_list)
-        #
-        # item_object.set_basic_parameter(ItemBasicParameterOf.PROC_EFFECT, proc_effect_list)
-        # item_object.set_basic_parameter(ItemBasicParameterOf.USE_EFFECT, user_effect_list)
-        # item_object.set_basic_parameter(ItemBasicParameterOf.OTHER, unknown_effect_list)
-        # #item_object.set_basic_parameter(ItemBasicParameterOf.SOURCE_TYPE, self.get_source())
-
-        # return item_object
 
     def extract_basic_info(self):
         for k, v in self.basic_info_dict.items():
@@ -145,13 +119,11 @@ class SingleItemParser:
             self.item.set_basic_parameter(ItemBasicParameterOf.SOURCE_TYPE, source_type_str[:-2])
 
 
-
-
 class ItemListParser:
-    def __init__(self, browser: WebDriver):
-        self.url: str = browser.current_url
-        # browser.get(url)
-
+    def __init__(self, browser: WebDriver, url: str):
+        self.url: str = url
+        browser.get(url)
+        browser.refresh()  # When you update the link it does not refresh page, so doing a manual refresh.
         content: str = browser.page_source
         try:
             self.soup_content: BeautifulSoup = BeautifulSoup(content, "html.parser")
@@ -173,22 +145,33 @@ class ItemListParser:
 
 
 class LinkType(enum.Enum):
-    INVALID = 0
-    SINGLE_ITEM = 1
-    ITEM_LIST = 2
+    NOT_A_LINK = 0
+    INVALID_LINK = 1
+    WOWHEAD_SINGLE_ITEM = 2
+    WOWHEAD_ITEM_LIST = 3
 
 
 def get_link_type(html: str) -> LinkType:
-    wowhead_link = "https://www.wowhead.com/wotlk"
-    single_item_link = wowhead_link + "/item="
-    item_list_link = wowhead_link
+    _BASIC_LINK: str = "https://www."
+    _BASIC_WOWHEAD_LINK: str = _BASIC_LINK + "wowhead.com/wotlk"
+    _WOWHEAD_SINGLE_ITEM_LINK = _BASIC_WOWHEAD_LINK + "/item="
+    _WOWHEAD_ITEM_LIST_LINK = _BASIC_WOWHEAD_LINK + "/items"
 
-    if html.startswith(single_item_link):
-        return LinkType.SINGLE_ITEM
+    # Not a link
+    if not html.startswith(_BASIC_LINK):
+        return LinkType.NOT_A_LINK
 
-    if html.startswith(item_list_link):
-        return LinkType.ITEM_LIST
+    # Not a Wowhead link
+    if not html.startswith(_BASIC_WOWHEAD_LINK):
+        return LinkType.INVALID_LINK
 
-    return LinkType.INVALID
+    # Wowhead single item link
+    if html.startswith(_WOWHEAD_SINGLE_ITEM_LINK):
+        return LinkType.WOWHEAD_SINGLE_ITEM
 
-    # throw error
+    # Wowhead item list link
+    if html.startswith(_WOWHEAD_ITEM_LIST_LINK):
+        return LinkType.WOWHEAD_ITEM_LIST
+
+    # No idea what link it is
+    return LinkType.INVALID_LINK
