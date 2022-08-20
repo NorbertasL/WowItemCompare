@@ -32,7 +32,6 @@ class SingleItemParser:
         browser.get(self.url_xml)
         content: str = browser.page_source
 
-
         self.soup_content: BeautifulSoup = BeautifulSoup(content, "html.parser")
         self.tooltip_bs: BeautifulSoup = self.soup_content.find("div", attrs={'id': 'folder5'})
         self.basic_info_dict: dict = json.loads("{" + (self.soup_content.find("div", attrs={'id': 'folder6'})
@@ -57,7 +56,7 @@ class SingleItemParser:
                 print("extract_basic_info:Unknown JSON key:", k, " ", self.url)
                 logging.warning("extract_basic_info:Unknown JSON key:" + k + " for " + self.url)
                 continue
-
+            #print(item_key.NAME, " ", item_key.get_json_key())
             # Some parameters need special handling
             match item_key:
                 case ItemBasicParameterOf.ARMOUR_CLASS:
@@ -66,6 +65,8 @@ class SingleItemParser:
                     self._extract_slot(v)
                 case ItemBasicParameterOf.SOURCE_TYPE:
                     self._extract_source_type(v)
+                case ItemBasicParameterOf.SOURCE_LOC:
+                    self._extract_source_more(v)
                 case _:
                     self.item.set_basic_parameter(item_key, v)
 
@@ -112,11 +113,37 @@ class SingleItemParser:
             source_type: enum.Enum | None = SourceTypeOf.find_by_id(source_id)
             if source_type is not None:
                 source_type_str = source_type_str + SourceTypeOf(source_type).get_name() + ", "
+                self.item.set_basic_parameter(ItemBasicParameterOf.SOURCE_TYPE, source_type_str[:-2])
             else:
                 print("Unknown source type of:" + str(source_id) + " for:" + self.url)
                 logging.warning("Unknown source type of:" + str(source_id) + " for:" + self.url)
 
-            self.item.set_basic_parameter(ItemBasicParameterOf.SOURCE_TYPE, source_type_str[:-2])
+    def _extract_source_more(self, source_list: list[dict]):
+        if not isinstance(source_list, list):
+            print(("Source more data should be in a list but are:"
+                   + str(type(source_list)) + "of value:" + str(source_list) + " for:" + self.url))
+            logging.error("Source more data should be in a list but are:"
+                          + str(type(source_list)) + "of value:" + str(source_list) + " for:" + self.url)
+            return
+        for list_dic in source_list:
+            if not isinstance(list_dic, dict):
+                print(("Source more data  elements should be in a dict but are:"
+                       + str(type(source_list)) + "of value:" + str(source_list) + " for:" + self.url))
+                logging.error("Source more data elements should be in a dict  but are:"
+                              + str(type(source_list)) + "of value:" + str(source_list) + " for:" + self.url)
+                continue  # Hoping to next since this one is bad
+
+            location_id_list: list[int | None] = [list_dic.get(SourceTypeOf.SOURCE_JSON_KEY.get_json_key()),
+                                                  list_dic.get(SourceTypeOf.SOURCE_INSTANCE_KEY.get_json_key())]
+
+            for location_id in location_id_list:
+                if location_id is not None:
+                    location_enum: enum.Enum | None = SourceTypeOf.find_by_id(location_id)
+                    if location_enum is None:
+                        print("Unknown location id:" + str(location_id) + " for:" + self.url)
+                    else:
+                        location_str: str = SourceTypeOf(location_enum).get_name()
+                        self.item.set_basic_parameter(ItemBasicParameterOf.SOURCE_LOC, location_str)
 
 
 class ItemListParser:

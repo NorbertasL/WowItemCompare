@@ -161,7 +161,10 @@ class ItemWebCrawler:
 
             case "print":
                 print("-" * 30)
-                print("TO BE ADDED SOON!")  # TODO implement print out list functionality
+                for item in self.all_item_obj:
+                    print(item.get_basic_parameter(ItemBasicParameterOf.NAME),
+                          " Source:", item.get_basic_parameter(ItemBasicParameterOf.SOURCE_TYPE),
+                          " Loc:", item.get_basic_parameter(ItemBasicParameterOf.SOURCE_LOC))
                 print("-" * 30)
 
             case "save":

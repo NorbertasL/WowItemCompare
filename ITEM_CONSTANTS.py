@@ -44,7 +44,9 @@ IGNORED_JSON_KEYS: list[str] = ["classs", "classes", "reqclass", "flags2", "qual
                                 "displayid", "dps", "speed", "dmgmax1", "dmgmin1", "dmgrange", "dmgtype1", "dura",
                                 "maxcount", "mledmgmax","mledmgmin", "mledps","mlespeed", "sellprice", "sheathtype",
                                 "buyprice", "reqrace", "races", "slotbak", "side", "rgddps", "rgdspeed", "rgddmgmax",
-                                "rgddmgmin", "heroic", "modelviewer", "reqarenartng", "armorbonus"]
+                                "rgddmgmin", "heroic", "modelviewer", "reqarenartng", "armorbonus", "reqrep","glyph"
+                                "reqskill", "reqfaction", "avgbuyout", "reqskillrank, mlehastertng, rgdhastertng",
+                                "splhastertng", "reqspell"]
 
 class ItemBasicParameterOf(JsonEnum):
     # ENUM = Name, Json_Key
@@ -61,10 +63,12 @@ class ItemBasicParameterOf(JsonEnum):
     BINDING_TYPE = "Binding Type"
     USE_EFFECT = "Use Effects"
     PROC_EFFECT = "Proc Effects"
-    SOURCE_TYPE = "Source", "source"
-    SOURCE_MORE = "Source More", "sourcemore"
+    SOURCE_TYPE = "Source Type", "source"
+    SOURCE_LOC = "Source", "sourcemore"
+    SOURCE_DETAIL = "Dropper Name"
 
 class ItemSlotOf(IdEnum):
+    MOUNT = "Mount", 0
     HEAD = "Head", 1
     NECK = "Neck", 2
     SHOULDER = "Shoulder", 3
@@ -120,6 +124,8 @@ class ItemStatsOf(JsonEnum, IdEnum):
     BLOCK_VALUE = "Block Value", "blockamount"
     RES = "Resilience", "resirtng"
 
+    ARC_RES = "Arcane Resistance", "arcres"
+
     ARMOUR_VALUE = "Armour Value", "armor"
     CD = "Cooldown", "cooldown"
     ITEM_SET = "Item Set", "itemset"
@@ -140,9 +146,42 @@ class ArmourClassOf(IdEnum):
     MAIL = "Mail", 3
     PLATE = "Plate", 4
 
-class SourceTypeOf(IdEnum):
+class SourceTypeOf(IdEnum, JsonEnum):
+    CRAFT = "Craft", 1
+    #2 i think it might be pvp, but pvp items come from vendor so use vendor tag
     DROP = "Drop", 2
+    QUEST = "Quest", 4
     VENDOR = "Vendor", 5
+    ACHIEVEMENT = "Achievement", 12
+
+    SOURCE_JSON_KEY = "Source Json Key", "s"
+    SOURCE_INSTANCE_KEY = "Instance Json Key", "z"
+
+    BLACKSMITHING = "Blacksmithing", 164
+    LEATHERWORKING = "Leatherworking", 165
+    ALCHEMY = "Alchemy", 171
+    COOKING = "Cooking", 185
+    TAILOR = "Tailoring", 197
+    ENGINEERING = "Engineering", 202
+    INSCRIPTION = "Inscription", 773
+    JEWELCRAFTING = "Jewelcrafting", 755
+
+    DRAGONBLIGHT = "Dragonblight", 65
+    UTGARD_KEEP = "Utgarde Keep", 206
+    ICECROWN = "Icecrown", 210
+    URGARDE_PINNACLE = "Utgarde Pinnacle", 1196
+    NAXXRAMAS = "Naxxramas", 3456
+    STRATHOLME = "The Culling of Stratholme", 4100
+    OCULUS = "The Oculus", 4228
+    NEXUS = "The Nexus", 4265
+    HALLS_OF_LIGHTNING = "Halls of Lightning", 4272
+    DALARAN = "Dalaran", 4395
+    GUNDRAK = "Gundrak", 4416
+    OBSIDIAN_SANCTUM = "The Obsidian Sanctum", 4493
+    AHNKAHET_TOK = "Ahn'kahet: The Old Kingdom", 4494
+
+
+
 
 
 
